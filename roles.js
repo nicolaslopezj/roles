@@ -136,20 +136,17 @@ Roles.helper = function(userId, helper) {
   var args = _.toArray(arguments).slice(2);
   var self = this;
   var context = { userId: userId };
-  var response, isAdmin;
+  var responses = [];
   var userRoles = Roles._collection.findOne({ userId: userId });
   if (!userRoles) return;
 
   _.each(userRoles.roles, function(role){
-    if (!isAdmin && self._roles[role] && self._roles[role].helpers && self._roles[role].helpers[helper]) {
-      response = self._roles[role].helpers[helper].apply(context, args);
-    }
-    if (role == 'admin') {
-      isAdmin = true;
+    if (self._roles[role] && self._roles[role].helpers && self._roles[role].helpers[helper]) {
+      responses.push(self._roles[role].helpers[helper].apply(context, args));
     }
   });
 
-  return response;
+  return responses;
 }
 
 /**
