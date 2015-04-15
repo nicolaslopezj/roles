@@ -117,8 +117,9 @@ Roles.Role.prototype.helper = function(helper, func) {
   if (!_.contains(Roles._helpers, helper)) throw 'Helper "' + helper + '" is not defined';
 
   if (!_.isFunction(func)) {
+    var value = _.clone(func);
     func = function() {
-      return func;
+      return value;
     }
   }
 
