@@ -16,50 +16,10 @@ Roles._helpers = [];
 Roles._collection = new Mongo.Collection('roles');
 
 /**
- * Roles permissions
+ * Check if a user has a role
  */
-Roles._collection.allow({
-  insert: function (userId, doc) {
-    check(doc, {
-      userId: String,
-      role: [String]
-    })
-    return true;
-  },
-  update: function (userId, doc, fields, modifier) {
-    check(doc, {
-      userId: String,
-      role: [String]
-    })
-    return true;
-  },
-  remove: function (userId, doc) {
-    return true;
-  }
-});
-
-/**
- * Adds a roles to a user
- */
-Roles.addUsersToRoles = function(userId, roles) {
-  check(userId, String);
-  check(roles, Match.OneOf(String, Array));
-  if (!_.isArray(roles)) {
-    roles = [roles];
-  }
-  Roles._collection.upsert({ userId: userId }, { $addToSet: { roles: { $each: roles } } });
-}
-
-/**
- * Set user roles
- */
-Roles.setUserRoles = function(userId, roles) {
-  check(userId, String);
-  check(roles, Match.OneOf(String, Array));
-  if (!_.isArray(roles)) {
-    roles = [roles];
-  }
-  Roles._collection.update({ userId: userId }, { $set: { roles: roles } });
+Roles.userHasRole = function(userId, role) {
+  return Roles._collection.find({ userId: userId, roles: role }).count() > 0;
 }
 
 /**
@@ -251,18 +211,40 @@ Roles.deny = function(userId, action) {
   return denied;
 }
 
+/**
+ * To check if a user has permisisons to execute an action
+ */
 Roles.userHasPermission = function() {
   var allows = this.allow.apply(this, arguments);
   var denies = this.deny.apply(this, arguments);
   return allows === true && denies === false;
 }
 
-Roles._adminRole = new Roles.Role('admin');
-
+/**
+ * Adds helpers to users
+ */
 Meteor.users.helpers({
+  /**
+   * Returns the user roles
+   */
   roles: function () {
     var object = Roles._collection.findOne({ userId: this._id });
     return object ? object.roles : [];
+  },
+  /**
+   * To check if the user has a role
+   */
+  hasRole: function(role) {
+    return Roles.userHasRole(this._id, role);
   }
 });
+
+/**
+ * The admin role, who recives the default actions.
+ */
+Roles._adminRole = new Roles.Role('admin');
+
+
+
+
 
