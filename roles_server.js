@@ -20,7 +20,7 @@ Roles.addUsersToRoles = function(userId, roles) {
   if (!_.isArray(roles)) {
     roles = [roles];
   }
-  Roles._collection.upsert({ userId: userId }, { $addToSet: { roles: { $each: roles } } });
+  return Roles._collection.upsert({ userId: userId }, { $addToSet: { roles: { $each: roles } } });
 }
 
 /**
@@ -32,7 +32,7 @@ Roles.setUserRoles = function(userId, roles) {
   if (!_.isArray(roles)) {
     roles = [roles];
   }
-  Roles._collection.upsert({ userId: userId }, { $set: { roles: roles } });
+  return Roles._collection.upsert({ userId: userId }, { $set: { roles: roles } });
 }
 
 /**
@@ -44,5 +44,5 @@ Roles.removeUsersFromRoles = function(userId, roles) {
   if (!_.isArray(roles)) {
     roles = [roles];
   }
-  Roles._collection.update({ userId: userId }, { $pullAll: { roles: roles } });
+  return Roles._collection.update({ userId: userId }, { $pullAll: { roles: roles } });
 }
