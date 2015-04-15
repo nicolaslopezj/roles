@@ -177,6 +177,28 @@ EditorRole.deny('posts.update', function(userId, doc, fields, modifier) {
 })
 ```
 
+Now, we will create a publication only for editors.
+
+```js
+
+// Register the action
+Roles.registerAction('posts.subscribeToMyPosts');
+
+// Create the publication
+if (Meteor.isServer) {
+  Meteor.publish('myPosts', function () {
+    // Roles.userHasPermission checks allow and deny rules
+    if (!Roles.userHasPermission(this.userId, 'posts.subscribeToMyPosts')) {
+      return [];
+    } else {
+      return Posts.find({ userId: this.userId })
+    }
+  });
+}
+
+// Now we will allow editor to subscribe to their posts
+EditorRole.allow('posts.subscribeToMyPosts', true)
+```
 
 
 
