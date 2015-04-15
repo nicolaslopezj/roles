@@ -21,7 +21,7 @@ You can use roles as a normal roles package
 To add roles to a user.
 
 ```js
-Roles.addUsersToRoles(userId, roles)
+Roles.addUserToRoles(userId, roles)
 ```
 
 - ```userId``` String. The id of the user.
@@ -39,7 +39,7 @@ Roles.setUserRoles(userId, roles)
 To remove roles from a user
 
 ```js
-Roles.removeUsersFromRoles(userId, roles)
+Roles.removeUserFromRoles(userId, roles)
 ```
 
 - ```userId``` String. The id of the user.

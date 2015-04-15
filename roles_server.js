@@ -14,7 +14,7 @@ Meteor.publish(null, function () {
 /**
  * Adds roles to a user
  */
-Roles.addUsersToRoles = function(userId, roles) {
+Roles.addUserToRoles = function(userId, roles) {
   check(userId, String);
   check(roles, Match.OneOf(String, Array));
   if (!_.isArray(roles)) {
@@ -38,7 +38,7 @@ Roles.setUserRoles = function(userId, roles) {
 /**
  * Removes roles from a user
  */
-Roles.removeUsersFromRoles = function(userId, roles) {
+Roles.removeUserFromRoles = function(userId, roles) {
   check(userId, String);
   check(roles, Match.OneOf(String, Array));
   if (!_.isArray(roles)) {
