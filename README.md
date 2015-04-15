@@ -14,7 +14,7 @@ The main features of Roles is that allows you to create **actions** and add allo
 
 You can use roles as a normal roles package
 
-#### Attach roles to users *Server*
+#### Attach roles to users ```server```
 
 To add roles to a user.
 
