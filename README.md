@@ -151,7 +151,7 @@ We will create a collection and create a action to update it.
 Posts = new Mongo.Collection('posts');
 
 // Create the action
-Roles.registerAction('posts.update', true); // The admin - which is automatically created - role can update posts always
+Roles.registerAction('posts.update', true); // The admin (which is automatically created) role can update posts always
 
 // Use the action
 Posts.allow({
