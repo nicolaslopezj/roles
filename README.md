@@ -67,7 +67,9 @@ Roles.registerAction(name, adminAllow, adminDeny)
 ```
 
 - ```name``` String. The name of the action.
-- ```adminAllow```, ```adminDeny``` Function. Optional. The response for the admin role on this action.
+- ```adminAllow```, ```adminDeny``` Any. Optional. The response for the admin role on this action.
+
+If the value you pass to ```adminAllow``` and/or ```adminDeny``` is not a function **Roles** will convert it to a Function that returns that value.
 
 ### Creating a role
 
@@ -140,8 +142,40 @@ Roles.userHasPermission(userId, action, [extra])
 - ```action``` String. The name of the action.
 - ```[extra]``` Each argument that you add to this function will be passed to the allow/deny functions you defined.
 
+### Example
 
+We will create a collection and create a action to update it.
 
+```js
+// We create the collection
+Posts = new Mongo.Collection('posts');
+
+// Create the action
+Roles.registerAction('posts.update', true); // The admin - which is automatically created - role can update posts always
+
+// Use the action
+Posts.allow({
+  update: function (userId, doc, fields, modifier) {
+    return Roles.allow(userId, 'posts.update', userId, doc, fields, modifier);
+  },
+});
+Posts.deny({
+  update: function (userId, doc, fields, modifier) {
+    return Roles.deny(userId, 'posts.update', userId, doc, fields, modifier);
+  },
+});
+
+// Create a new role
+EditorRole = new Roles.Role('editor');
+
+// Set the allow/deny rules
+EditorRole.allow('posts.update', function(userId, doc, fields, modifier) {
+  return doc.userId === userId; // Will be allowed to edit his own posts
+})
+EditorRole.deny('posts.update', function(userId, doc, fields, modifier) {
+  return !_.contains(fields, 'userId') // Can't update userId field.
+})
+```
 
 
 
