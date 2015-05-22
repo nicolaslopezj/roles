@@ -55,6 +55,23 @@ Roles.userHasRole(userId, role)
 - ```userId``` String. The id of the user.
 - ```role``` String. The name of the role.
 
+### Users collection helpers
+
+Roles also attach helpers to the ```Meteor.users``` collection.
+
+#### Get user roles
+
+```js
+var user = Meteor.user();
+var roles = user.roles();
+```
+
+#### Check if a user has a role
+
+```js
+var user = Meteor.user();
+var hasRole = user.hasRole();
+```
 
 ## Advanced features
 
