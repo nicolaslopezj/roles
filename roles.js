@@ -242,7 +242,35 @@ Meteor.users.helpers({
  */
 Roles._adminRole = new Roles.Role('admin');
 
+Mongo.Collection.prototype.attachRoles = function(name) {
+  Roles.registerAction(name + '.insert', true);
+  Roles.registerAction(name + '.update', true);
+  Roles.registerAction(name + '.remove', true);
 
+  this.allow({
+    insert: function (userId, doc) {
+      return Roles.allow(userId, name + '.insert', userId, doc)
+    },
+    update: function (userId, doc, fields, modifier) {
+      return Roles.allow(userId, name + '.update', userId, doc, fields, modifier)
+    },
+    remove: function (userId, doc) {
+      return Roles.allow(userId, name + '.remove', userId, doc)
+    }
+  });
+
+  this.deny({
+    insert: function (userId, doc) {
+      return Roles.deny(userId, name + '.insert', userId, doc)
+    },
+    update: function (userId, doc, fields, modifier) {
+      return Roles.deny(userId, name + '.update', userId, doc, fields, modifier)
+    },
+    remove: function (userId, doc) {
+      return Roles.deny(userId, name + '.remove', userId, doc)
+    }
+  });
+}
 
 
 

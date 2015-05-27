@@ -200,5 +200,21 @@ if (Meteor.isServer) {
 EditorRole.allow('posts.subscribeToMyPosts', true)
 ```
 
+### Helper for collections
 
+Instead of registering and implementing the actions for a collection, there is a helper that do
+that for you.
 
+```js
+myCollection.attachRoles('myCollectionRolesPrefix')
+```
+
+That code will register the following actions:
+
+```
+myCollectionRolesPrefix.insert
+myCollectionRolesPrefix.update
+myCollectionRolesPrefix.remove
+```
+
+And automatically attach the allow/deny rules to the collection.
