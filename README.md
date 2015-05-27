@@ -7,8 +7,9 @@ Roles is like a common roles package with more features.
 meteor add nicolaslopezj:roles
 ```
 
-The main features of Roles is that allows you to create **actions** and add allow/deny rules to that action for a specific role
+The main features of Roles is that allows you to create **actions** and add allow/deny rules to that action for a specific role.
 
+> This roles package introduces a new way of thinking about roles. It makes you think first about actions and then define the different responses for each role to that action.
 
 ## Basic use
 
@@ -55,6 +56,23 @@ Roles.userHasRole(userId, role)
 - ```userId``` String. The id of the user.
 - ```role``` String. The name of the role.
 
+### Users collection helpers
+
+Roles also attach helpers to the ```Meteor.users``` collection.
+
+#### Get user roles
+
+```js
+var user = Meteor.user();
+var roles = user.roles();
+```
+
+#### Check if a user has a role
+
+```js
+var user = Meteor.user();
+var hasRole = user.hasRole();
+```
 
 ## Advanced features
 
