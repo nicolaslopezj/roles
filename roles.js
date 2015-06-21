@@ -219,6 +219,15 @@ Roles.userHasPermission = function() {
 }
 
 /**
+ * If the user doesn't has permission it will throw a error
+ */
+Roles.checkPermission = function() {
+  if (!this.userHasPermission.apply(this, arguments)) {
+    throw new Meteor.Error('unauthorized', 'The user has no permission to perform this action')
+  }
+}
+
+/**
  * Adds helpers to users
  */
 Meteor.users.helpers({

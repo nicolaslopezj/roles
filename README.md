@@ -160,6 +160,12 @@ Roles.userHasPermission(userId, action, [extra])
 - ```action``` String. The name of the action.
 - ```[extra]``` Each argument that you add to this function will be passed to the allow/deny functions you defined.
 
+To throw a error if the user doesn't has permission (userful for methods)
+
+```js
+Roles.checkPermission(userId, action, [extra])
+```
+
 ### Example
 
 We will create a collection and create a action to update it.
