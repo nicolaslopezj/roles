@@ -242,3 +242,29 @@ myCollectionRolesPrefix.remove
 ```
 
 And automatically attach the allow/deny rules to the collection.
+
+### Template Helpers
+
+Check if the logged in has permissions over a action
+
+```html
+<template name="myTemplate">
+  {{# if userHasPermission 'myCollection.insert' }}
+    <h1>Insert a document</h1>
+  {{ else }}
+    <p>You don't have permissions!</p>
+  {{/ if }}
+</template>
+```
+
+Check if roles are ready
+
+```html
+<template name="myTemplate">
+  {{# if rolesIsReady }}
+    <p>Roles are loaded</p>
+  {{ else }}
+    <p>We don't know if you have permissions yet...</p>
+  {{/ if }}
+</template>
+```
