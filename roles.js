@@ -33,10 +33,10 @@ Roles.registerAction = function(name, adminAllow, adminDeny) {
   this._actions.push(name);
 
   if (adminAllow) {
-    Roles._adminRole.allow(name, adminAllow);
+    Roles.adminRole.allow(name, adminAllow);
   }
   if (adminDeny) {
-    Roles._adminRole.deny(name, adminDeny);
+    Roles.adminRole.deny(name, adminDeny);
   }
 }
 
@@ -49,7 +49,7 @@ Roles.registerHelper = function(name, adminHelper) {
   this._helpers.push(name);
 
   if (adminHelper) {
-    Roles._adminRole.helper(name, adminHelper);
+    Roles.adminRole.helper(name, adminHelper);
   }
 }
 
@@ -164,8 +164,10 @@ Roles.allow = function(userId, action) {
   var context = { userId: userId };
   var allowed = false;
   var userRoles = Roles._collection.findOne({ userId: userId });
-  if (!userRoles) return;
-  _.each(userRoles.roles, function(role){
+  var roles = (userRoles && userRoles.roles) || []
+  roles.push('__default__');
+  
+  _.each(roles, function(role){
     if (!allowed && self._roles[role] && self._roles[role].allowRules && self._roles[role].allowRules[action]) {
       _.each(self._roles[role].allowRules[action], function(func){
         var allow = func.apply(context, args);
@@ -193,9 +195,10 @@ Roles.deny = function(userId, action) {
   var context = { userId: userId };
   var denied = false;
   var userRoles = Roles._collection.findOne({ userId: userId });
-  if (!userRoles) return;
-
-  _.each(userRoles.roles, function(role){
+  var roles = (userRoles && userRoles.roles) || []
+  roles.push('__default__');
+  
+  _.each(roles, function(role){
     if (!denied && self._roles[role] && self._roles[role].denyRules && self._roles[role].denyRules[action]) {
       _.each(self._roles[role].denyRules[action], function(func){
         var denies = func.apply(context, args);
@@ -249,7 +252,12 @@ Meteor.users.helpers({
 /**
  * The admin role, who recives the default actions.
  */
-Roles._adminRole = new Roles.Role('admin');
+Roles.adminRole = new Roles.Role('admin'); Roles._adminRole = Roles.adminRole;
+Roles.defaultRole = new Roles.Role('__default__');
+
+/**
+ * The default role, all users have this role
+ */
 
 Mongo.Collection.prototype.attachRoles = function(name) {
   Roles.registerAction(name + '.insert', true);
