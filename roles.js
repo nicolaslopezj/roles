@@ -16,6 +16,13 @@ Roles._helpers = [];
 Roles._collection = new Mongo.Collection('roles');
 
 /**
+ * Get the list of roles
+ */
+Roles.availableRoles = function() {
+  return _.without(_.keys(this._roles), '__default__');
+}
+
+/**
  * Check if a user has a role
  */
 Roles.userHasRole = function(userId, role) {
@@ -133,7 +140,7 @@ Roles.helper = function(userId, helper) {
   check(userId, Match.Optional(String));
   check(helper, String);
   if (!_.contains(this._helpers, helper)) throw 'Helper "' + helper + '" is not defined';
-  
+
   var args = _.toArray(arguments).slice(2);
   var self = this;
   var context = { userId: userId };
@@ -166,7 +173,7 @@ Roles.allow = function(userId, action) {
   var userRoles = Roles._collection.findOne({ userId: userId });
   var roles = (userRoles && userRoles.roles) || []
   roles.push('__default__');
-  
+
   _.each(roles, function(role){
     if (!allowed && self._roles[role] && self._roles[role].allowRules && self._roles[role].allowRules[action]) {
       _.each(self._roles[role].allowRules[action], function(func){
@@ -186,7 +193,7 @@ Roles.allow = function(userId, action) {
  */
 Roles.deny = function(userId, action) {
   if (!userId) return false;
-  
+
   check(userId, Match.Optional(String));
   check(action, String);
 
@@ -197,7 +204,7 @@ Roles.deny = function(userId, action) {
   var userRoles = Roles._collection.findOne({ userId: userId });
   var roles = (userRoles && userRoles.roles) || []
   roles.push('__default__');
-  
+
   _.each(roles, function(role){
     if (!denied && self._roles[role] && self._roles[role].denyRules && self._roles[role].denyRules[action]) {
       _.each(self._roles[role].denyRules[action], function(func){
@@ -288,6 +295,3 @@ Mongo.Collection.prototype.attachRoles = function(name) {
     }
   });
 }
-
-
-
