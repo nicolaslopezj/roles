@@ -146,9 +146,10 @@ Roles.helper = function(userId, helper) {
   var context = { userId: userId };
   var responses = [];
   var userRoles = Roles._collection.findOne({ userId: userId });
-  if (!userRoles) return;
+  var roles = (userRoles && userRoles.roles) || []
+  roles.push('__default__');
 
-  _.each(userRoles.roles, function(role){
+  _.each(roles, function(role){
     if (self._roles[role] && self._roles[role].helpers && self._roles[role].helpers[helper]) {
       responses.push(self._roles[role].helpers[helper].apply(context, args));
     }
