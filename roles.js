@@ -20,14 +20,14 @@ Roles._collection = new Mongo.Collection('roles');
  */
 Roles.availableRoles = function() {
   return _.without(_.keys(this._roles), '__default__');
-}
+};
 
 /**
  * Check if a user has a role
  */
 Roles.userHasRole = function(userId, role) {
   return Roles._collection.find({ userId: userId, roles: role }).count() > 0;
-}
+};
 
 /**
  * Creates a new action
@@ -45,7 +45,7 @@ Roles.registerAction = function(name, adminAllow, adminDeny) {
   if (adminDeny) {
     Roles.adminRole.deny(name, adminDeny);
   }
-}
+};
 
 /**
  * Creates a new helper
@@ -58,7 +58,7 @@ Roles.registerHelper = function(name, adminHelper) {
   if (adminHelper) {
     Roles.adminRole.helper(name, adminHelper);
   }
-}
+};
 
 /**
  * Constructs a new role
@@ -75,7 +75,7 @@ Roles.Role = function(name) {
   this.helpers = {};
 
   Roles._roles[name] = this;
-}
+};
 
 /**
  * Adds allow properties to a role
@@ -89,12 +89,12 @@ Roles.Role.prototype.allow = function(action, allow) {
     var clone = _.clone(allow);
     allow = function() {
       return clone;
-    }
+    };
   }
 
   this.allowRules[action] = this.allowRules[action] || [];
   this.allowRules[action].push(allow);
-}
+};
 
 /**
  * Adds deny properties to a role
@@ -108,12 +108,12 @@ Roles.Role.prototype.deny = function(action, deny) {
     var clone = _.clone(deny);
     deny = function() {
       return clone;
-    }
+    };
   }
 
   this.denyRules[action] = this.denyRules[action] || [];
   this.denyRules[action].push(deny);
-}
+};
 
 /**
  * Adds a helper to a role
@@ -127,11 +127,15 @@ Roles.Role.prototype.helper = function(helper, func) {
     var value = _.clone(func);
     func = function() {
       return value;
-    }
+    };
   }
 
-  this.helpers[helper] = func;
-}
+  if (!this.helpers[helper]) {
+    this.helpers[helper] = [];
+  }
+
+  this.helpers[helper].push(func);
+};
 
 /**
  * Calls a helper
@@ -146,17 +150,20 @@ Roles.helper = function(userId, helper) {
   var context = { userId: userId };
   var responses = [];
   var userRoles = Roles._collection.findOne({ userId: userId });
-  var roles = (userRoles && userRoles.roles) || []
+  var roles = (userRoles && userRoles.roles) || [];
   roles.push('__default__');
 
   _.each(roles, function(role){
     if (self._roles[role] && self._roles[role].helpers && self._roles[role].helpers[helper]) {
-      responses.push(self._roles[role].helpers[helper].apply(context, args));
+      var helpers = self._roles[role].helpers[helper];
+      _.each(helpers, function(helper) {
+        responses.push(helper.apply(context, args));
+      });
     }
   });
 
   return responses;
-}
+};
 
 /**
  * Returns if the user passes the allow check
@@ -172,7 +179,7 @@ Roles.allow = function(userId, action) {
   var context = { userId: userId };
   var allowed = false;
   var userRoles = Roles._collection.findOne({ userId: userId });
-  var roles = (userRoles && userRoles.roles) || []
+  var roles = (userRoles && userRoles.roles) || [];
   roles.push('__default__');
 
   _.each(roles, function(role){
@@ -187,7 +194,7 @@ Roles.allow = function(userId, action) {
   });
 
   return allowed;
-}
+};
 
 /**
  * Returns if the user has permission using deny and deny
@@ -203,7 +210,7 @@ Roles.deny = function(userId, action) {
   var context = { userId: userId };
   var denied = false;
   var userRoles = Roles._collection.findOne({ userId: userId });
-  var roles = (userRoles && userRoles.roles) || []
+  var roles = (userRoles && userRoles.roles) || [];
   roles.push('__default__');
 
   _.each(roles, function(role){
@@ -218,7 +225,7 @@ Roles.deny = function(userId, action) {
   });
 
   return denied;
-}
+};
 
 /**
  * To check if a user has permisisons to execute an action
@@ -227,16 +234,16 @@ Roles.userHasPermission = function() {
   var allows = this.allow.apply(this, arguments);
   var denies = this.deny.apply(this, arguments);
   return allows === true && denies === false;
-}
+};
 
 /**
  * If the user doesn't has permission it will throw a error
  */
 Roles.checkPermission = function() {
   if (!this.userHasPermission.apply(this, arguments)) {
-    throw new Meteor.Error('unauthorized', 'The user has no permission to perform this action')
+    throw new Meteor.Error('unauthorized', 'The user has no permission to perform this action');
   }
-}
+};
 
 /**
  * Adds helpers to users
@@ -274,25 +281,25 @@ Mongo.Collection.prototype.attachRoles = function(name) {
 
   this.allow({
     insert: function (userId, doc) {
-      return Roles.allow(userId, name + '.insert', userId, doc)
+      return Roles.allow(userId, name + '.insert', userId, doc);
     },
     update: function (userId, doc, fields, modifier) {
-      return Roles.allow(userId, name + '.update', userId, doc, fields, modifier)
+      return Roles.allow(userId, name + '.update', userId, doc, fields, modifier);
     },
     remove: function (userId, doc) {
-      return Roles.allow(userId, name + '.remove', userId, doc)
+      return Roles.allow(userId, name + '.remove', userId, doc);
     }
   });
 
   this.deny({
     insert: function (userId, doc) {
-      return Roles.deny(userId, name + '.insert', userId, doc)
+      return Roles.deny(userId, name + '.insert', userId, doc);
     },
     update: function (userId, doc, fields, modifier) {
-      return Roles.deny(userId, name + '.update', userId, doc, fields, modifier)
+      return Roles.deny(userId, name + '.update', userId, doc, fields, modifier);
     },
     remove: function (userId, doc) {
-      return Roles.deny(userId, name + '.remove', userId, doc)
+      return Roles.deny(userId, name + '.remove', userId, doc);
     }
   });
-}
+};
