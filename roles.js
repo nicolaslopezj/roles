@@ -9,6 +9,7 @@ Roles = {};
 Roles._roles = {};
 Roles._actions = [];
 Roles._helpers = [];
+Roles._specialRoles = ['__loggedIn__', '__notAdmin__', '__notLoggedIn__', '__all__'];
 
 /**
  * To save the roles in the database
@@ -19,14 +20,18 @@ Roles._collection = new Mongo.Collection('roles');
  * Get the list of roles
  */
 Roles.availableRoles = function() {
-  return _.without(_.keys(this._roles), '__default__');
+  return _.difference(_.keys(this._roles), this._specialRoles);
 };
 
 /**
  * Check if a user has a role
  */
 Roles.userHasRole = function(userId, role) {
-  return Roles._collection.find({ userId: userId, roles: role }).count() > 0;
+  if (role == '__all__') return true;
+  if (role == '__notLoggedIn__' && !userId) return true;
+  if (role == '__default__' && userId) return true;
+  if (role == '__notAdmin__' && this._collection.find({ userId: userId, roles: 'admin' }).count() === 0) return true;
+  return this._collection.find({ userId: userId, roles: role }).count() > 0;
 };
 
 /**
@@ -66,7 +71,7 @@ Roles.registerHelper = function(name, adminHelper) {
 Roles.Role = function(name) {
   check(name, String);
 
-  if (! (this instanceof Roles.Role))
+  if (!(this instanceof Roles.Role))
     throw new Error('use "new" to construct a role');
 
   this.name = name;
@@ -138,10 +143,32 @@ Roles.Role.prototype.helper = function(helper, func) {
 };
 
 /**
+ * Get user roles
+ */
+Roles.getUserRoles = function(userId, includeSpecial) {
+  check(userId, Match.OneOf(String, null, undefined));
+  check(includeSpecial, Match.Optional(Boolean));
+  var object = Roles._collection.findOne({ userId: userId });
+  var roles = object ? object.roles : [];
+  if (includeSpecial) {
+    roles.push('__all__');
+    if (!userId) {
+      roles.push('__notLoggedIn__');
+    } else {
+      roles.push('__loggedIn__');
+      if (!_.contains(roles, 'admin')) {
+        roles.push('__notAdmin__');
+      }
+    }
+  }
+  return roles;
+};
+
+/**
  * Calls a helper
  */
 Roles.helper = function(userId, helper) {
-  check(userId, Match.Optional(String));
+  check(userId, Match.OneOf(String, null, undefined));
   check(helper, String);
   if (!_.contains(this._helpers, helper)) throw 'Helper "' + helper + '" is not defined';
 
@@ -149,9 +176,7 @@ Roles.helper = function(userId, helper) {
   var self = this;
   var context = { userId: userId };
   var responses = [];
-  var userRoles = Roles._collection.findOne({ userId: userId });
-  var roles = (userRoles && userRoles.roles) || [];
-  roles.push('__default__');
+  var roles = Roles.getUserRoles(userId, true);
 
   _.each(roles, function(role){
     if (self._roles[role] && self._roles[role].helpers && self._roles[role].helpers[helper]) {
@@ -169,18 +194,14 @@ Roles.helper = function(userId, helper) {
  * Returns if the user passes the allow check
  */
 Roles.allow = function(userId, action) {
-  if (!userId) return false;
-
-  check(userId, Match.Optional(String));
+  check(userId, Match.OneOf(String, null, undefined));
   check(action, String);
 
   var args = _.toArray(arguments).slice(2);
   var self = this;
   var context = { userId: userId };
   var allowed = false;
-  var userRoles = Roles._collection.findOne({ userId: userId });
-  var roles = (userRoles && userRoles.roles) || [];
-  roles.push('__default__');
+  var roles = Roles.getUserRoles(userId, true);
 
   _.each(roles, function(role){
     if (!allowed && self._roles[role] && self._roles[role].allowRules && self._roles[role].allowRules[action]) {
@@ -200,18 +221,14 @@ Roles.allow = function(userId, action) {
  * Returns if the user has permission using deny and deny
  */
 Roles.deny = function(userId, action) {
-  if (!userId) return false;
-
-  check(userId, Match.Optional(String));
+  check(userId, Match.OneOf(String, null, undefined));
   check(action, String);
 
   var args = _.toArray(arguments).slice(2);
   var self = this;
   var context = { userId: userId };
   var denied = false;
-  var userRoles = Roles._collection.findOne({ userId: userId });
-  var roles = (userRoles && userRoles.roles) || [];
-  roles.push('__default__');
+  var roles = Roles.getUserRoles(userId, true);
 
   _.each(roles, function(role){
     if (!denied && self._roles[role] && self._roles[role].denyRules && self._roles[role].denyRules[action]) {
@@ -252,9 +269,8 @@ Meteor.users.helpers({
   /**
    * Returns the user roles
    */
-  roles: function () {
-    var object = Roles._collection.findOne({ userId: this._id });
-    return object ? object.roles : [];
+  roles: function (includeSpecial) {
+    return Roles.getUserRoles(this._id, includeSpecial);
   },
   /**
    * To check if the user has a role
@@ -267,13 +283,28 @@ Meteor.users.helpers({
 /**
  * The admin role, who recives the default actions.
  */
-Roles.adminRole = new Roles.Role('admin'); Roles._adminRole = Roles.adminRole;
-Roles.defaultRole = new Roles.Role('__default__');
+Roles.adminRole = new Roles.Role('admin'); Roles._adminRole = Roles.adminRole; // Backwards compatibility
+/**
+ * All the logged in users users
+ */
+Roles.loggedInRole = new Roles.Role('__loggedIn__'); Roles.defaultRole = Roles.loggedInRole; // Backwards compatibility
+/**
+ * The users that are not admins
+ */
+Roles.notAdminRole = new Roles.Role('__notAdmin__');
+/**
+ * The users that are not logged in
+ */
+Roles.notLoggedInRole = new Roles.Role('__notLoggedIn__');
+/**
+ * Always, no exception
+ */
+Roles.allRole = new Roles.Role('__all__');
+
 
 /**
- * The default role, all users have this role
+ * A Helper to attach actions to collections easily
  */
-
 Mongo.Collection.prototype.attachRoles = function(name) {
   Roles.registerAction(name + '.insert', true);
   Roles.registerAction(name + '.update', true);

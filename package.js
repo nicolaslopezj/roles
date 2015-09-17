@@ -1,7 +1,7 @@
 Package.describe({
   name: 'nicolaslopezj:roles',
   summary: 'The most complete roles package for meteor',
-  version: '1.3.3',
+  version: '1.4.0',
   git: 'https://github.com/nicolaslopezj/roles'
 });
 
