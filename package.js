@@ -1,7 +1,7 @@
 Package.describe({
   name: 'nicolaslopezj:roles',
-  summary: 'The most complete roles package for meteor',
-  version: '1.4.0',
+  summary: 'The most advanced roles package for meteor',
+  version: '1.5.0',
   git: 'https://github.com/nicolaslopezj/roles'
 });
 
@@ -20,6 +20,7 @@ Package.onUse(function(api) {
     ]);
 
   api.addFiles([
+    'helpers.js',
     'roles.js',
     'keys.js',
     ]);
@@ -32,6 +33,7 @@ Package.onUse(function(api) {
     ], 'client');
 
   api.export('Roles');
+  api.export('objectHasKey');
 });
 
 Package.onTest(function(api) {
