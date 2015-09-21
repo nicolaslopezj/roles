@@ -74,6 +74,9 @@ Roles.Role = function(name) {
   if (!(this instanceof Roles.Role))
     throw new Error('use "new" to construct a role');
 
+  if (_.has(Roles._roles, name))
+    throw new Error('"' + name + '" role is already defined');
+
   this.name = name;
   this.allowRules = {};
   this.denyRules = {};
@@ -338,7 +341,7 @@ Mongo.Collection.prototype.attachRoles = function(name) {
   this.deny({
     insert: function(userId, doc) {
       var forbiddenFields = _.union.apply(this, Roles.helper(userId, name + '.forbiddenFields'));
-      
+
       for (var i in forbiddenFields) {
         var field = forbiddenFields[i];
         if (objectHasKey(doc, field)) {

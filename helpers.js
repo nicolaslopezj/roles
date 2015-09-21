@@ -30,7 +30,5 @@ objectHasKey = function(object, key) {
     });
   });
 
-  console.log(newKeys);
-
   return _.contains(newKeys, key);
 };

@@ -5,10 +5,10 @@ var subscription = Meteor.subscribe('nicolaslopezj_roles');
  */
 Roles.isReady = function() {
   return subscription.ready();
-}
+};
 
 Template.registerHelper('rolesIsReady', function() {
-  return Roles.isReady()
+  return Roles.isReady();
 });
 
 /**
