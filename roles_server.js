@@ -1,14 +1,9 @@
 /**
- * Ensure mongo index
- */
-Roles._collection._ensureIndex('userId', { unique: true });
-
-/**
  * Publish user roles
  */
 Meteor.publish('nicolaslopezj_roles', function () {
-  return Roles._collection.find({ userId: this.userId });
-})
+  return Meteor.users.find({ _id: this.userId }, { fields: { roles: 1 } });
+});
 
 
 /**
@@ -20,8 +15,8 @@ Roles.addUserToRoles = function(userId, roles) {
   if (!_.isArray(roles)) {
     roles = [roles];
   }
-  return Roles._collection.upsert({ userId: userId }, { $addToSet: { roles: { $each: roles } } });
-}
+  return Meteor.users.update({ _id: userId }, { $addToSet: { roles: { $each: roles } } });
+};
 
 /**
  * Set user roles
@@ -32,8 +27,8 @@ Roles.setUserRoles = function(userId, roles) {
   if (!_.isArray(roles)) {
     roles = [roles];
   }
-  return Roles._collection.upsert({ userId: userId }, { $set: { roles: roles } });
-}
+  return Meteor.users.update({ _id: userId }, { $set: { roles: roles } });
+};
 
 /**
  * Removes roles from a user
@@ -44,5 +39,5 @@ Roles.removeUserFromRoles = function(userId, roles) {
   if (!_.isArray(roles)) {
     roles = [roles];
   }
-  return Roles._collection.update({ userId: userId }, { $pullAll: { roles: roles } });
-}
+  return Meteor.users.update({ _id: userId }, { $pullAll: { roles: roles } });
+};

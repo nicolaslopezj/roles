@@ -16,7 +16,7 @@ Roles.keys.collection.allow({
   remove: function(userId, doc) {
     return userId === doc.userId;
   }
-})
+});
 
 /**
  * Requests a new key
@@ -47,4 +47,4 @@ Roles.keys.getUserId = function(key, dontDelete) {
   }
 
   return doc && doc.userId;
-}
+};
