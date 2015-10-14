@@ -12,6 +12,11 @@ Roles._helpers = [];
 Roles._specialRoles = ['__loggedIn__', '__notAdmin__', '__notLoggedIn__', '__all__'];
 
 /**
+ * Old collection
+ */
+Roles._oldCollection = new Mongo.Collection('roles');
+
+/**
  * Get the list of roles
  */
 Roles.availableRoles = function() {
@@ -267,7 +272,7 @@ Meteor.users.helpers({
   /**
    * Returns the user roles
    */
-  roles: function (includeSpecial) {
+  getRoles: function (includeSpecial) {
     return Roles.getUserRoles(this._id, includeSpecial);
   },
   /**
