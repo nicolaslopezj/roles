@@ -308,10 +308,10 @@ Roles.allRole = new Roles.Role('__all__');
 /**
  * A Helper to attach actions to collections easily
  */
-Mongo.Collection.prototype.attachRoles = function(name) {
-  Roles.registerAction(name + '.insert', true);
-  Roles.registerAction(name + '.update', true);
-  Roles.registerAction(name + '.remove', true);
+Mongo.Collection.prototype.attachRoles = function(name, dontAllow) {
+  Roles.registerAction(name + '.insert', !dontAllow);
+  Roles.registerAction(name + '.update', !dontAllow);
+  Roles.registerAction(name + '.remove', !dontAllow);
   Roles.registerHelper(name + '.forbiddenFields', []);
 
   this.allow({
