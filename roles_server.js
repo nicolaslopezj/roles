@@ -5,6 +5,21 @@ Meteor.publish('nicolaslopezj_roles', function () {
   return Meteor.users.find({ _id: this.userId }, { fields: { roles: 1 } });
 });
 
+/**
+ * Migrate
+ */
+Meteor.methods({
+  nicolaslopezj_roles_migrate: function() {
+    var selector = Roles._oldCollection.find({});
+    console.log('migrating ' + selector.count() + ' roles...');
+    selector.forEach(function(userRoles) {
+      Meteor.users.update(userRoles.userId, { $set: { roles: userRoles.roles } });
+      Roles._oldCollection.remove(userRoles);
+    });
+    console.log('roles migrated');
+  }
+});
+
 
 /**
  * Adds roles to a user

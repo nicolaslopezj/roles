@@ -9,6 +9,12 @@ The most advanced roles package for meteor.
 
 Now roles are saved in the users collection. You need to migrate the db to update. The api is the same.
 
+To migrate run:
+
+```js
+Meteor.call('nicolaslopezj_roles_migrate');
+```
+
 ## Installing
 
 ```
