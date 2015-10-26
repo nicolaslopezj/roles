@@ -12,9 +12,9 @@ Roles._helpers = [];
 Roles._specialRoles = ['__loggedIn__', '__notAdmin__', '__notLoggedIn__', '__all__'];
 
 /**
- * To save the roles in the database
+ * Old collection
  */
-Roles._collection = new Mongo.Collection('roles');
+Roles._oldCollection = new Mongo.Collection('roles');
 
 /**
  * Get the list of roles
@@ -30,8 +30,8 @@ Roles.userHasRole = function(userId, role) {
   if (role == '__all__') return true;
   if (role == '__notLoggedIn__' && !userId) return true;
   if (role == '__default__' && userId) return true;
-  if (role == '__notAdmin__' && this._collection.find({ userId: userId, roles: 'admin' }).count() === 0) return true;
-  return this._collection.find({ userId: userId, roles: role }).count() > 0;
+  if (role == '__notAdmin__' && Meteor.users.find({ _id: userId, roles: 'admin' }).count() === 0) return true;
+  return Meteor.users.find({ _id: userId, roles: role }).count() > 0;
 };
 
 /**
@@ -151,7 +151,7 @@ Roles.Role.prototype.helper = function(helper, func) {
 Roles.getUserRoles = function(userId, includeSpecial) {
   check(userId, Match.OneOf(String, null, undefined));
   check(includeSpecial, Match.Optional(Boolean));
-  var object = Roles._collection.findOne({ userId: userId });
+  var object = Meteor.users.findOne({ _id: userId }, { fields: { roles: 1 } });
   var roles = object ? object.roles : [];
   if (includeSpecial) {
     roles.push('__all__');
@@ -272,7 +272,7 @@ Meteor.users.helpers({
   /**
    * Returns the user roles
    */
-  roles: function (includeSpecial) {
+  getRoles: function (includeSpecial) {
     return Roles.getUserRoles(this._id, includeSpecial);
   },
   /**

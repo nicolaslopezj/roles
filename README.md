@@ -5,6 +5,16 @@ The most advanced roles package for meteor.
 
 > This roles package introduces a new way of thinking about roles. It makes you think first about actions and then define the different responses for each role to that action and makes it very easy to add more roles later.
 
+## Version 2.0 Breaking Changes
+
+Now roles are saved in the users collection. You need to migrate the db to update. The api is the same.
+
+To migrate run:
+
+```js
+Meteor.call('nicolaslopezj_roles_migrate');
+```
+
 ## Installing
 
 ```
