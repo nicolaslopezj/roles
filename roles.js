@@ -152,7 +152,7 @@ Roles.getUserRoles = function(userId, includeSpecial) {
   check(userId, Match.OneOf(String, null, undefined));
   check(includeSpecial, Match.Optional(Boolean));
   var object = Meteor.users.findOne({ _id: userId }, { fields: { roles: 1 } });
-  var roles = object ? object.roles : [];
+  var roles = (object && object.roles) || [];
   if (includeSpecial) {
     roles.push('__all__');
     if (!userId) {
