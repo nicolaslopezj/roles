@@ -74,7 +74,7 @@ Roles also attach helpers to the ```Meteor.users``` collection.
 
 ```js
 var user = Meteor.user();
-var roles = user.roles();
+var roles = user.roles;
 ```
 
 #### Check if a user has a role
