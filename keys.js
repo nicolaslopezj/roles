@@ -20,14 +20,21 @@ Roles.keys.collection.allow({
 
 /**
  * Requests a new key
- * @param  {String} userId Id of the userId
- * @return {String}        Id of the key
+ * @param  {String} userId    Id of the userId
+ * @param  {Date}   expiresAt Date of expiration
+ * @return {String}           Id of the key
  */
-Roles.keys.request = function(userId) {
-  return this.collection.insert({
+Roles.keys.request = function(userId, expiresAt) {
+  check(userId, String);
+  var doc = {
     userId: userId,
     createdAt: new Date()
-  });
+  };
+  if (expiresAt) {
+    check(expiresAt, Date);
+    doc.expiresAt = expiresAt;
+  }
+  return this.collection.insert(doc);
 };
 
 /**
@@ -40,7 +47,7 @@ Roles.keys.getUserId = function(key, dontDelete) {
   check(key, String);
   check(dontDelete, Match.Optional(Boolean));
 
-  var doc = this.collection.findOne({ _id: key });
+  var doc = this.collection.findOne({ _id: key, $or: [{ expiresAt: { $exists: false } }, { expiresAt: { $gte: new Date() } }] });
 
   if (!dontDelete) {
     this.collection.remove({ _id: key });
