@@ -1,3 +1,16 @@
+willChangeWithParent = function(object, key) {
+  if (!_.isObject(object)) {
+    return;
+  }
+  var willChange = false;
+  _.each(_.keys(object), function(modifyingKey) {
+    if (key.indexOf(modifyingKey) === 0) {
+      willChange = true;
+    }
+  });
+  return willChange;
+};
+
 objectHasKey = function(object, key) {
   var dotNotation = {};
 

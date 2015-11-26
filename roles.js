@@ -357,7 +357,10 @@ Mongo.Collection.prototype.attachRoles = function(name, dontAllow) {
         var field = forbiddenFields[i];
         for (var j in types) {
           var type = types[j];
-          if (objectHasKey(modifier, type + '.' + field)) {
+          if (objectHasKey(modifier[type], field)) {
+            return true;
+          }
+          if (willChangeWithParent(modifier[type], field)) {
             return true;
           }
         }
