@@ -4,7 +4,7 @@ willChangeWithParent = function(object, key) {
   }
   var willChange = false;
   _.each(_.keys(object), function(modifyingKey) {
-    if (key.indexOf(modifyingKey) === 0) {
+    if (key && key.indexOf(modifyingKey) === 0) {
       willChange = true;
     }
   });
