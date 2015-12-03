@@ -3,6 +3,8 @@
  */
 Roles = {};
 
+Roles.debug = false;
+
 /**
  * Initialize variables
  */
@@ -239,6 +241,9 @@ Roles.deny = function(userId, action) {
         var denies = func.apply(context, args);
         if (denies === true) {
           denied = true;
+          if (Roles.debug) {
+            console.log(`[${action}] denied for ${userId} with role ${role}`);
+          }
         }
       });
     }
@@ -316,13 +321,25 @@ Mongo.Collection.prototype.attachRoles = function(name, dontAllow) {
 
   this.allow({
     insert: function(userId, doc) {
-      return Roles.allow(userId, name + '.insert', userId, doc);
+      var allows = Roles.allow(userId, name + '.insert', userId, doc);
+      if (Roles.debug && !allows) {
+        console.log(`[${name}.insert] not allowed for ${userId}`);
+      }
+      return allows;
     },
     update: function(userId, doc, fields, modifier) {
-      return Roles.allow(userId, name + '.update', userId, doc, fields, modifier);
+      var allows = Roles.allow(userId, name + '.update', userId, doc, fields, modifier);
+      if (Roles.debug && !allows) {
+        console.log(`[${name}.update] not allowed for ${userId}`);
+      }
+      return allows;
     },
     remove: function(userId, doc) {
-      return Roles.allow(userId, name + '.remove', userId, doc);
+      var allows = Roles.allow(userId, name + '.remove', userId, doc);
+      if (Roles.debug && !allows) {
+        console.log(`[${name}.remove] not allowed for ${userId}`);
+      }
+      return allows;
     }
   });
 
@@ -345,6 +362,9 @@ Mongo.Collection.prototype.attachRoles = function(name, dontAllow) {
       for (var i in forbiddenFields) {
         var field = forbiddenFields[i];
         if (objectHasKey(doc, field)) {
+          if (Roles.debug) {
+            console.log(`[${name}.forbiddenField] Field ${field} is forbidden for ${userId}`);
+          }
           return true;
         }
       }
@@ -358,9 +378,15 @@ Mongo.Collection.prototype.attachRoles = function(name, dontAllow) {
         for (var j in types) {
           var type = types[j];
           if (objectHasKey(modifier[type], field)) {
+            if (Roles.debug) {
+              console.log(`[${name}.forbiddenField] Field ${field} is forbidden for ${userId}`);
+            }
             return true;
           }
           if (willChangeWithParent(modifier[type], field)) {
+            if (Roles.debug) {
+              console.log(`[${name}.forbiddenField] Field ${field} is forbidden for ${userId} is been changed by a parent object`);
+            }
             return true;
           }
         }

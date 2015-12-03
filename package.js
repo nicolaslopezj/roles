@@ -1,7 +1,7 @@
 Package.describe({
   name: 'nicolaslopezj:roles',
   summary: 'The most advanced roles package for meteor',
-  version: '2.0.4',
+  version: '2.1.0',
   git: 'https://github.com/nicolaslopezj/roles'
 });
 
@@ -11,6 +11,7 @@ Package.onUse(function(api) {
   api.use([
     'meteor-platform',
     'accounts-base',
+    'ecmascript@0.1.6',
     'dburles:collection-helpers@1.0.3',
     ]);
 
