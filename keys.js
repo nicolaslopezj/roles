@@ -48,10 +48,19 @@ Roles.keys.getUserId = function(key, dontDelete) {
   check(dontDelete, Match.Optional(Boolean));
 
   var doc = this.collection.findOne({ _id: key, $or: [{ expiresAt: { $exists: false } }, { expiresAt: { $gte: new Date() } }] });
+  if (!doc) return;
 
   if (!dontDelete) {
-    this.collection.remove({ _id: key });
+    if (!doc.expiresAt) {
+      console.log('borrando por no tener expire at');
+      this.collection.remove({ _id: key });
+    } else {
+      if (moment(doc.expiresAt).isBefore(moment())) {
+        console.log('borrando por expire at ya pasó');
+        this.collection.remove({ _id: key });
+      }
+    }
   }
 
-  return doc && doc.userId;
+  return doc.userId;
 };
