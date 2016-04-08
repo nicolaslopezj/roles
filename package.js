@@ -1,11 +1,11 @@
 Package.describe({
   name: 'nicolaslopezj:roles',
   summary: 'The most advanced roles package for meteor',
-  version: '2.1.2',
-  git: 'https://github.com/nicolaslopezj/roles'
+  version: '2.2.0',
+  git: 'https://github.com/nicolaslopezj/roles',
 });
 
-Package.onUse(function(api) {
+Package.onUse(function (api) {
   api.versionsFrom('1.0');
 
   api.use([
@@ -35,7 +35,7 @@ Package.onUse(function(api) {
   api.export('objectHasKey');
 });
 
-Package.onTest(function(api) {
+Package.onTest(function (api) {
   api.use('tinytest');
   api.use('orionjs:core');
 });
