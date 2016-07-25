@@ -78,17 +78,6 @@ var hasRole = user.hasRole();
 
 Roles allows you to define actions and have differente responses for each role on that action.
 
-### Register a action
-
-```js
-Roles.registerAction(name, adminAllow, adminDeny)
-```
-
-- ```name``` String. The name of the action.
-- ```adminAllow```, ```adminDeny``` Any. Optional. The response for the admin role on this action.
-
-If the value you pass to ```adminAllow``` and/or ```adminDeny``` is not a function **Roles** will convert it to a Function that returns that value.
-
 ### Creating a role
 
 If you use Roles as the basic way this is not necesary, but if you wan't to use actions, this is needed.
@@ -177,9 +166,6 @@ We will create a collection and create a action to update it.
 ```js
 // We create the collection
 Posts = new Mongo.Collection('posts');
-
-// Create the action
-Roles.registerAction('posts.update', true); // The admin (which is automatically created) role can update posts always
 
 // Use the action
 Posts.allow({
