@@ -1,5 +1,9 @@
 # Changelog
 
+### v2.5
+
+- GraphQL permission decorator ```@Roles.action```
+
 ### v2.4
 
 - Don't require blaze

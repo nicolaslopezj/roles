@@ -1,3 +1,6 @@
+import {Meteor} from 'meteor/meteor'
+import {check, Match} from 'meteor/check'
+
 /**
  * Publish user roles
  */
@@ -58,4 +61,32 @@ Roles.removeUserFromRoles = function (userId, roles) {
   }
 
   return Meteor.users.update({ _id: userId }, { $pullAll: { roles: roles } })
+}
+
+/**
+ * Requires a permission to run a resolver
+ */
+Roles.action = function (action) {
+  return function (target, key, descriptor) {
+    let fn = descriptor.value
+    if (typeof fn !== 'function') {
+      throw new Error(`@Roles.action decorator can only be applied to methods not: ${typeof fn}`)
+    }
+
+    return {
+      configurable: true,
+      get () {
+        const newFn = (root, params, context) => {
+          Roles.checkPermission(context.userId, action, root, params)
+          return fn(root, params, context)
+        }
+        Object.defineProperty(this, key, {
+          value: newFn,
+          configurable: true,
+          writable: true
+        })
+        return newFn
+      }
+    }
+  }
 }

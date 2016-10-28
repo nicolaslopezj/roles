@@ -155,6 +155,33 @@ To throw a error if the user doesn't has permission (userful for methods)
 Roles.checkPermission(userId, action, [extra])
 ```
 
+### GraphQL Integration
+
+To check a permissons in GraphQL resolvers you can use the ```@Roles.graphQLAction``` decorator
+
+Example:
+
+```js
+import {Roles} from 'meteor/nicolaslopezj:roles'
+
+const role = new Roles.Role('role')
+
+role.allow('viewPostStats', function (post, params) {
+  return post.createdBy === this.userId
+})
+
+// Resolvers
+{
+  Post: {
+    @Roles.action('viewPostStats')
+    stats (post, params, context) {
+      return postStats
+    }
+  }
+}
+```
+
+
 ### Debug
 
 Set ```Roles.debug = true;``` log details.
