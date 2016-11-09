@@ -66,7 +66,13 @@ Roles.removeUserFromRoles = function (userId, roles) {
 /**
  * Requires a permission to run a resolver
  */
-Roles.action = function (action) {
+const defaultOptions = {
+  returnNull: false,
+  showKey: true,
+  mapArgs: (...args) => args
+}
+Roles.action = function (action, userOptions) {
+  const options = {...defaultOptions, ...userOptions}
   return function (target, key, descriptor) {
     let fn = descriptor.value
     if (typeof fn !== 'function') {
@@ -77,8 +83,18 @@ Roles.action = function (action) {
       configurable: true,
       get () {
         const newFn = (root, params, context) => {
-          Roles.checkPermission(context.userId, action, root, params)
-          return fn(root, params, context)
+          const args = options.mapArgs(root, params, context)
+          const hasPermission = Roles.userHasPermission(context.userId, action, ...args)
+          if (hasPermission) {
+            return fn(root, params, context)
+          } else {
+            if (options.returnNull) {
+              return null
+            } else {
+              const keyText = options.showKey ? ` [${key}]` : ''
+              throw new Error(`The user has no permission to perform this action${keyText}`)
+            }
+          }
         }
         Object.defineProperty(this, key, {
           value: newFn,

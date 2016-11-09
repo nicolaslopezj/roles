@@ -1,5 +1,9 @@
 # Changelog
 
+### v2.6
+
+- Add options to ```@Roles.action``` decorator
+
 ### v2.5
 
 - GraphQL permission decorator ```@Roles.action```
