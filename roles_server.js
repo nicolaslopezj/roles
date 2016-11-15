@@ -82,11 +82,11 @@ Roles.action = function (action, userOptions) {
     return {
       configurable: true,
       get () {
-        const newFn = (root, params, context) => {
-          const args = options.mapArgs(root, params, context)
+        const newFn = (root, params, context, ...other) => {
+          const args = options.mapArgs(root, params, context, ...other)
           const hasPermission = Roles.userHasPermission(context.userId, action, ...args)
           if (hasPermission) {
-            return fn(root, params, context)
+            return fn(root, params, context, ...other)
           } else {
             if (options.returnNull) {
               return null

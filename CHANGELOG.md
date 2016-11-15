@@ -1,5 +1,9 @@
 # Changelog
 
+### v2.6.2
+
+- Pass remaining args in ```@Roles.action```
+
 ### v2.6.1
 
 - Fix bug on ```@Roles.action``` decorator
