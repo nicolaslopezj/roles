@@ -1,5 +1,9 @@
 # Changelog
 
+### v2.6.1
+
+- Fix bug on ```@Roles.action``` decorator
+
 ### v2.6
 
 - Add options to ```@Roles.action``` decorator

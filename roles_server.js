@@ -74,7 +74,7 @@ const defaultOptions = {
 Roles.action = function (action, userOptions) {
   const options = {...defaultOptions, ...userOptions}
   return function (target, key, descriptor) {
-    let fn = descriptor.value
+    let fn = descriptor.value || target[key]
     if (typeof fn !== 'function') {
       throw new Error(`@Roles.action decorator can only be applied to methods not: ${typeof fn}`)
     }
