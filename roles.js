@@ -408,6 +408,11 @@ Mongo.Collection.prototype.attachRoles = function (name, dontAllow) {
       var forbiddenFields = _.union.apply(this, Roles.helper(userId, name + '.forbiddenFields', doc._id))
       var types = ['$inc', '$mul', '$rename', '$setOnInsert', '$set', '$unset', '$min', '$max', '$currentDate']
 
+      // By some reason following for will itterate even through empty array. This will prevent unwanted habbit.
+      if (forbiddenFields.length === 0) {
+        return false
+      }
+
       for (var i in forbiddenFields) {
         var field = forbiddenFields[i]
         for (var j in types) {
