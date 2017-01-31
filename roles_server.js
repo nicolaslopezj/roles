@@ -91,8 +91,8 @@ Roles.action = function (action, userOptions) {
             if (options.returnNull) {
               return null
             } else {
-              const keyText = options.showKey ? ` [${key}]` : ''
-              throw new Error(`The user has no permission to perform this action${keyText}`)
+              const keyText = options.showKey ? ` "${action}" in "${key}"` : ''
+              throw new Error(`The user has no permission to perform the action${keyText}`)
             }
           }
         }
