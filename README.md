@@ -76,11 +76,11 @@ var hasRole = user.hasRole();
 
 ## Advanced features
 
-Roles allows you to define actions and have differente responses for each role on that action.
+Roles allows you to define actions and have different responses for each role on that action.
 
 ### Creating a role
 
-If you use Roles as the basic way this is not necesary, but if you wan't to use actions, this is needed.
+If you use Roles as the basic way this is not necessary, but if you want to use actions, this is needed.
 
 ```js
 myRole = new Roles.Role(name)
@@ -89,7 +89,7 @@ myRole = new Roles.Role(name)
 
 ### Adding rules
 
-Now, to set responses of a role on a action
+Now, to set responses of a role on an action
 
 #### Allow
 
@@ -111,11 +111,11 @@ myRole.deny(action, func)
 
 ### Check permissions
 
-Now that we have our allow/deny rules we want to check if the user has permissions. Note that a user can have more than one role, so **Roles** will check every action. If a role doesn't have allow/deny rules for a action they won't be considered.
+Now that we have our allow/deny rules we want to check if the user has permissions. Note that a user can have more than one role, so **Roles** will check every action. If a role doesn't have allow/deny rules for an action they won't be considered.
 
 #### Check allow
 
-To check if a user is **allowed** to perform an action. **Roles** will check all the roles the user has and if at least one role return ```true``` on a action, this function will return ```true```.
+To check if a user is **allowed** to perform an action. **Roles** will check all the roles the user has and if at least one role return ```true``` on an action, this function will return ```true```.
 
 ```js
 Roles.allow(userId, action, [extra])
@@ -127,7 +127,7 @@ Roles.allow(userId, action, [extra])
 
 #### Check deny
 
-To check if a user is **denied** to perform an action. **Roles** will check all the roles the user has and if at least one role return ```true``` on a action, this function will return ```true```.
+To check if a user is **denied** to perform an action. **Roles** will check all the roles the user has and if at least one role return ```true``` on an action, this function will return ```true```.
 
 ```js
 Roles.deny(userId, action, [extra])
@@ -149,7 +149,7 @@ Roles.userHasPermission(userId, action, [extra])
 - ```action``` String. The name of the action.
 - ```[extra]``` Each argument that you add to this function will be passed to the allow/deny functions you defined.
 
-To throw a error if the user doesn't has permission (userful for methods)
+To throw an error if the user doesn't have permission (useful for methods)
 
 ```js
 Roles.checkPermission(userId, action, [extra])
@@ -157,7 +157,7 @@ Roles.checkPermission(userId, action, [extra])
 
 ### GraphQL Integration
 
-To check a permissons in GraphQL resolvers you can use the ```@Roles.graphQLAction``` decorator
+To check a permission in GraphQL resolvers you can use the ```@Roles.graphQLAction``` decorator
 
 Example:
 
@@ -188,7 +188,7 @@ Set ```Roles.debug = true;``` log details.
 
 ### Example
 
-We will create a collection and create a action to update it.
+We will create a collection and create an action to update it.
 
 ```js
 // We create the collection
@@ -262,7 +262,7 @@ And automatically attach the allow/deny rules to the collection.
 
 ### Template Helpers
 
-Check if the logged in has permissions over a action
+Check if the logged in has permissions over an action
 
 ```html
 <template name="myTemplate">
