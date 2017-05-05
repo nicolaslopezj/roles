@@ -5,6 +5,8 @@ The most advanced roles package for meteor.
 
 > This roles package introduces a new way of thinking about roles. It makes you think first about actions and then define the different responses for each role to that action and makes it very easy to add more roles later.
 
+> Project sponsored by [Orion Hosting](https://orion.hosting/?utm_source=github-roles) - Hosting for Meteor
+
 ## Installing
 
 ```
