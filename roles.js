@@ -11,7 +11,6 @@ Roles.debug = false
 Roles._roles = {}
 Roles._actions = []
 Roles._helpers = []
-Roles._usersCollection = Meteor.users
 Roles._specialRoles = ['__loggedIn__', '__notAdmin__', '__notLoggedIn__', '__all__']
 
 /**
@@ -35,9 +34,9 @@ Roles.userHasRole = function (userId, role) {
   if (role == '__default__' && userId) return true
   if (
     role == '__notAdmin__' &&
-    Roles._usersCollection.find({ _id: userId, roles: 'admin' }).count() === 0
+    Meteor.users.find({ _id: userId, roles: 'admin' }).count() === 0
   ) return true
-  return Roles._usersCollection.find({ _id: userId, roles: role }).count() > 0
+  return Meteor.users.find({ _id: userId, roles: role }).count() > 0
 }
 
 /**
@@ -172,7 +171,7 @@ Roles.Role.prototype.helper = function (helper, func) {
 Roles.getUserRoles = function (userId, includeSpecial) {
   check(userId, Match.OneOf(String, null, undefined))
   check(includeSpecial, Match.Optional(Boolean))
-  var object = Roles._usersCollection.findOne({ _id: userId }, { fields: { roles: 1 } })
+  var object = Meteor.users.findOne({ _id: userId }, { fields: { roles: 1 } })
   var roles = (object && object.roles) || []
   if (includeSpecial) {
     roles.push('__all__')
@@ -297,7 +296,7 @@ Roles.checkPermission = function () {
  * Adds helpers to users
  */
 Roles.setUsersHelpers = function () {
-  Roles._usersCollection.helpers({
+  Meteor.users.helpers({
     /**
      * Returns the user roles
      */
